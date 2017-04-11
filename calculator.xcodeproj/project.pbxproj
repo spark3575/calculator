@@ -56,6 +56,7 @@
 			children = (
 				B057873E1E9C35A800088B40 /* ViewController.swift */,
 				B05787401E9C35A800088B40 /* Main.storyboard */,
+				B081332D1E9C831E009D718B /* New Group */,
 				B057874E1E9C373800088B40 /* Supporting Files */,
 			);
 			path = calculator;
@@ -70,6 +71,13 @@
 				B05787481E9C35A800088B40 /* Info.plist */,
 			);
 			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+		B081332D1E9C831E009D718B /* New Group */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = "New Group";
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -310,6 +318,7 @@
 				B057874D1E9C35A800088B40 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};
