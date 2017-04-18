@@ -17,19 +17,24 @@ struct CalculatorBrain {
         case unaryOperation((Double) -> Double)
         case binaryOperation((Double,Double) -> Double)
         case equals
+        case clear
     }
     
     private var operations: Dictionary<String,Operation> = [
         "π" : Operation.constant(Double.pi),
         "e" : Operation.constant(M_E),
         "√" : Operation.unaryOperation(sqrt),
+        "sin" : Operation.unaryOperation(sin),
         "cos" : Operation.unaryOperation(cos),
-        "±" : Operation.unaryOperation({ -$0 }),
+        "tan" : Operation.unaryOperation(tan),
+        "⁺∕₋" : Operation.unaryOperation({ -$0 }),
+        "x²" : Operation.unaryOperation({ $0 * $0 }),
         "×" : Operation.binaryOperation({ $0 * $1 }),
         "÷" : Operation.binaryOperation({ $0 / $1 }),
         "+" : Operation.binaryOperation({ $0 + $1 }),
         "−" : Operation.binaryOperation({ $0 - $1 }),
-        "=" : Operation.equals
+        "=" : Operation.equals,
+        "C" : Operation.clear
     ]
     
     mutating func performOperation(_ symbol: String) {
@@ -48,8 +53,15 @@ struct CalculatorBrain {
                 }
             case .equals:
                 performPendingBinaryOperation()
+            case .clear:
+                clearCalculator()
             }
         }
+    }
+    
+    private mutating func clearCalculator() {
+        pendingBinaryOperation = nil
+        accumulator = nil
     }
     
     private mutating func performPendingBinaryOperation() {
