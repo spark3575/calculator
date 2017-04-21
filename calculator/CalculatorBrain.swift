@@ -14,9 +14,11 @@ struct CalculatorBrain {
     private var pendingBinaryOperation: PendingBinaryOperation?
     var description = " "
     private var previousDescription = ""
+    private var previousRandom = ""
     
     private enum Operation {
         case constant(Double)
+        case randomNumberOperation(() -> UInt32)
         case unaryOperation((Double) -> Double)
         case binaryOperation((Double,Double) -> Double)
         case equals
@@ -24,12 +26,16 @@ struct CalculatorBrain {
     }
     
     private var operations: Dictionary<String,Operation> = [
+        "rand" : Operation.randomNumberOperation(arc4random),
         "π" : Operation.constant(Double.pi),
         "e" : Operation.constant(M_E),
         "√" : Operation.unaryOperation(sqrt),
         "sin" : Operation.unaryOperation(sin),
         "cos" : Operation.unaryOperation(cos),
         "tan" : Operation.unaryOperation(tan),
+        "eˣ" : Operation.unaryOperation(exp),
+        "ln" : Operation.unaryOperation(log),
+        "log" : Operation.unaryOperation(log10),
         "⁺∕₋" : Operation.unaryOperation({ -$0 }),
         "x²" : Operation.unaryOperation({ $0 * $0 }),
         "×" : Operation.binaryOperation({ $0 * $1 }),
@@ -43,6 +49,19 @@ struct CalculatorBrain {
     mutating func performOperation(_ symbol: String) {
         if let operation = operations[symbol] {
             switch operation {
+            case .randomNumberOperation(let function):
+                let formatter = NumberFormatter()
+                formatter.minimumFractionDigits = 0
+                formatter.maximumFractionDigits = 6
+                accumulator = Double(function())
+                let stringForRandom = formatter.string(for: accumulator)!
+                if resultIsPending {
+                    description = description.replacingOccurrences(of: previousRandom, with: "")
+                    description += stringForRandom
+                    previousRandom = stringForRandom
+                } else {
+                    description = stringForRandom
+                }
             case .constant(let value):
                 accumulator = value
                 if resultIsPending {
@@ -71,7 +90,7 @@ struct CalculatorBrain {
                 if accumulator != nil {
                     pendingBinaryOperation = PendingBinaryOperation(function: function, firstOperand: accumulator!)
                     accumulator = nil
-                    description += symbol
+                    description += " " + symbol + " "
                 }
             case .equals:
                 performPendingBinaryOperation()
@@ -105,11 +124,14 @@ struct CalculatorBrain {
     
     mutating func setOperand(_ operand: Double) {
         accumulator = operand
+        let formatter = NumberFormatter()
+        formatter.minimumFractionDigits = 0
+        formatter.maximumFractionDigits = 6
         if resultIsPending {
-            description += String(accumulator!)
-            previousDescription = String(accumulator!)
+            description += formatter.string(for: accumulator)!
+            previousDescription = formatter.string(for: accumulator)!
         } else {
-            description = String(accumulator!)
+            description = formatter.string(for: accumulator)!
         }
     }
     

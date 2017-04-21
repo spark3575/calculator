@@ -47,12 +47,25 @@ class CalculatorVC: UIViewController {
         }
     }
     
-    var displayValue: Double {
+    var displayValue: Double? {
         get {
-            return Double(display.text!)!
+            if let text = display.text, let value = NumberFormatter().number(from: text)?.doubleValue {
+                return value
+            }
+            return nil
         }
         set {
-            display.text = String(newValue)
+            let formatter = NumberFormatter()
+            formatter.minimumFractionDigits = 0
+            formatter.maximumFractionDigits = 6
+            display.text = formatter.string(for: newValue)
+            let negativeValue = formatter.string(for: abs(newValue!))
+            if (newValue! > 0.0 && newValue! < 1) {
+                display.text = "0" + display.text!
+            }
+            if (newValue! < 0.0 && newValue! > -1) {
+                display.text = "-0" + negativeValue!
+            }
         }
     }
     
@@ -71,11 +84,10 @@ class CalculatorVC: UIViewController {
     
     @IBAction func performOperation(_ sender: UIButton) {
         if userIsInTheMiddleOfTyping {
-            brain.setOperand(displayValue)
+            brain.setOperand(displayValue!)
             userIsInTheMiddleOfTypingDecimal = false
             if sender.currentTitle == "C" {
                 display.text = "0"
-                userIsInTheMiddleOfTyping = false
                 userIsInTheMiddleOfTypingDecimal = false
             }
             if sender.currentTitle == "⁺∕₋" {
@@ -99,7 +111,7 @@ class CalculatorVC: UIViewController {
             if (brain.resultIsPending) {
                 descriptionLabel.text! += "..."
             } else {
-                descriptionLabel.text! += "="
+                descriptionLabel.text! += " ="
             }
         } else {
             displayValue = 0
