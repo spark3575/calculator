@@ -15,6 +15,7 @@ struct CalculatorBrain {
     var description = " "
     private var previousDescription = ""
     private var previousRandom = ""
+    private var variable = ""
     
     private enum Operation {
         case constant(Double)
@@ -143,6 +144,10 @@ struct CalculatorBrain {
         get {
             return accumulator
         }
+    }
+    
+    mutating func addUnaryOperation(named symbol: String, _ operation: @escaping (Double) -> Double) {
+        operations[symbol] = Operation.unaryOperation(operation)
     }
 }
 
